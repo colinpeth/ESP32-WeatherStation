@@ -19,6 +19,9 @@ void setup()
   Serial.println("BMP180 sensor not found");
   while (1) {}
   }
+
+  analogRead(36);
+  
    WiFi.mode(WIFI_STA);              // Wifi as client mode
   WiFi.begin(ssid, pass);           // Credentials to connect to the Access Point
   
@@ -41,7 +44,6 @@ void setup()
  
 void loop() {
     
-  
 
     //DHT11
     int readData = DHT.read22(dataPin); // Reads the data from the sensor
@@ -58,7 +60,10 @@ void loop() {
 
     //Rain Sensor
     int RainVal = digitalRead(rainPin);
-    
+
+    double batteryLevel = analogRead(36);
+    float voltage = batteryLevel *(5.0/1023.0);
+    float batteryPercent= (voltage-2.5)/2.5;
     
     Serial.print("Temperature BMP = ");
     Serial.println(BMPtempC);
@@ -83,6 +88,12 @@ void loop() {
     Serial.print("Rain Val: ");
     Serial.println(RainVal);
 
+    Serial.print("SensorRead= ");
+    Serial.println(batteryLevel);
+    Serial.print("Voltage= ");
+    Serial.println(voltage);
+    Serial.print("Battery Percent= ");
+    Serial.println(batteryPercent);
 
  
 
@@ -101,7 +112,12 @@ void loop() {
     client.print('\r');
     client.print(RainVal);
     client.print('\r');
-    
+    client.print(batteryLevel);
+    client.print('\r');
+    client.print(voltage);
+    client.print('\r');
+    client.print(batteryPercent);
+    client.print('\r');
     
   String answer = client.readStringUntil('\r');   // Receive value from the server until \r
   Serial.println(answer);
